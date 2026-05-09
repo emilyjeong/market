@@ -251,41 +251,14 @@ body {
     <div class="sec-title">📊 시장 심리</div>
     <div class="sec-line"></div>
   </div>
-  <div class="two-col">
 
-    <div class="sent-card">
-      <div class="card-title">Fear &amp; Greed</div>
-      <div class="fg-svg-wrap">
-        <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="arcG" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%"   stop-color="#ff4d6a"/>
-              <stop offset="45%"  stop-color="#ffcc00"/>
-              <stop offset="100%" stop-color="#00e5a0"/>
-            </linearGradient>
-          </defs>
-          <path d="M15,55 A35,35 0 0,1 85,55" fill="none" stroke="#1e2338" stroke-width="7" stroke-linecap="round"/>
-          <path id="arc-fill" d="M15,55 A35,35 0 0,1 85,55" fill="none" stroke="url(#arcG)"
-                stroke-width="7" stroke-linecap="round" stroke-dasharray="110" stroke-dashoffset="110"/>
-          <line id="needle" x1="50" y1="55" x2="50" y2="25"
-                stroke="white" stroke-width="1.8" stroke-linecap="round" opacity="0.9"/>
-          <circle cx="50" cy="55" r="3.5" fill="#1e3060" stroke="white" stroke-width="1.5"/>
-        </svg>
-      </div>
-      <div class="fg-score" id="fg-score">--</div>
-      <div class="fg-label" id="fg-label">로딩 중</div>
+  <div class="sent-card">
+    <div class="card-title">VIX 지수</div>
+    <div class="vix-score" id="vix-score">--</div>
+    <div class="vix-chg"   id="vix-chg"></div>
+    <div class="vix-note">
+      <strong>40↑</strong> 투자 타이밍 · 시차 감안 40부터 분할매수 (메르)
     </div>
-
-    <div class="sent-card">
-      <div class="card-title">VIX 지수</div>
-      <div class="vix-score" id="vix-score">--</div>
-      <div class="vix-chg"   id="vix-chg"></div>
-      <div class="vix-note">
-        <strong>40↑</strong> 투자 타이밍<br>
-        시차 감안 40부터<br>분할매수 (메르)
-      </div>
-    </div>
-
   </div>
 </div>
 
@@ -341,27 +314,6 @@ function setLiq(id, data) {
   document.getElementById(id + '-date').textContent = fmtD(data.date);
 }
 
-function setGauge(s) {
-  var ang = (1 - s / 100) * Math.PI;
-  var cx = 50, cy = 55, r = 26;
-  var nx  = (cx + r * Math.cos(ang)).toFixed(1);
-  var ny  = (cy - r * Math.sin(ang)).toFixed(1);
-  document.getElementById('needle').setAttribute('x2', nx);
-  document.getElementById('needle').setAttribute('y2', ny);
-  document.getElementById('arc-fill').setAttribute('stroke-dashoffset', (110 * (1 - s / 100)).toFixed(1));
-  var c = s <= 25 ? '#ff4d6a' : s <= 45 ? '#ff9a3c' : s >= 75 ? '#00e5a0' : s >= 55 ? '#7ed6a0' : '#ffcc00';
-  document.getElementById('fg-score').style.color = c;
-  document.getElementById('fg-label').style.color = c;
-}
-
-function fgLabel(s) {
-  if (s <= 25) return '😨 EXTREME FEAR';
-  if (s <= 45) return '😟 FEAR';
-  if (s <= 55) return '😐 NEUTRAL';
-  if (s <= 75) return '😏 GREED';
-  return '🤑 EXTREME GREED';
-}
-
 function vixColor(v) { return v >= 40 ? '#ff4d6a' : v >= 25 ? '#ffcc00' : '#00e5a0'; }
 
 async function load() {
@@ -398,20 +350,17 @@ async function load() {
       var jo = Math.round(d.m2.current / 1000);
       document.getElementById('m2-val').innerHTML =
         jo.toLocaleString() + '<span class="info-unit">조</span>';
-      document.getElementById('m2-date').textContent = '기준: ' + (d.m2.date || '');
+      var dateStr = d.m2.date ? d.m2.date.slice(0,4) + '.' + d.m2.date.slice(4,6) : '';
+      var subHTML = '기준: ' + dateStr;
+      if (d.m2.previous) {
+        var yoy = ((d.m2.current - d.m2.previous) / d.m2.previous * 100).toFixed(1);
+        var yc  = parseFloat(yoy) >= 0 ? '#00e5a0' : '#ff4d6a';
+        subHTML += '<br>전년 동월 대비<br>' +
+          '<span style="color:' + yc + '">' + (parseFloat(yoy) >= 0 ? '+' : '') + yoy + '%</span>';
+      }
+      document.getElementById('m2-date').innerHTML = subHTML;
     } else {
       document.getElementById('m2-val').innerHTML = '오류';
-    }
-
-    // Fear & Greed
-    if (d.fg && typeof d.fg.value === 'number') {
-      var s = d.fg.value;
-      document.getElementById('fg-score').textContent = s;
-      document.getElementById('fg-label').textContent = fgLabel(s);
-      setGauge(s);
-    } else {
-      document.getElementById('fg-score').textContent = '--';
-      document.getElementById('fg-label').textContent = '데이터 없음';
     }
 
   } catch(e) {
