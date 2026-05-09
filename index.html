@@ -110,6 +110,12 @@ body {
 }
 .card-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
 
+/* F&G */
+.fg-svg-wrap { width: 100%; padding: 8px 4px 0; }
+.fg-svg-wrap svg { width: 100%; height: auto; display: block; overflow: visible; }
+.fg-score { font-family: var(--mono); font-size: 24px; font-weight: 700; text-align: center; margin-top: 8px; }
+.fg-label { font-family: var(--mono); font-size: 9px; font-weight: 600; text-align: center; margin-top: 3px; letter-spacing: 1px; }
+
 /* VIX */
 .vix-score { font-family: var(--mono); font-size: 34px; font-weight: 600; line-height: 1; margin-bottom: 3px; }
 .vix-chg   { font-family: var(--mono); font-size: 9px; margin-bottom: 10px; }
@@ -278,6 +284,28 @@ body {
   </div>
 </div>
 
+<div class="group">
+  <div class="sec-header">
+    <div class="sec-title">🇺🇸 미국 고용지표</div>
+    <div class="sec-line"></div>
+  </div>
+  <div class="two-col">
+
+    <div class="info-card">
+      <div class="info-title">실업률</div>
+      <div class="info-val" id="unr-val" style="color:#ffcc00">--<span class="info-unit">%</span></div>
+      <div class="info-sub" id="unr-sub"></div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-title">비농업 고용</div>
+      <div class="info-val" id="pay-val" style="color:#c5b3ff">--<span class="info-unit">K</span></div>
+      <div class="info-sub" id="pay-sub"></div>
+    </div>
+
+  </div>
+</div>
+
 <div id="debug"></div>
 
 <div class="bottom-time">
@@ -286,7 +314,7 @@ body {
 </div>
 
 <script>
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwQW5u-wH_oCMabV0m93EyMT9xPCXvtV4J4s_zMMezzMD68fWy1D098mRp7YjrUHErY/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxlWyI-mLtL67AzTq9OIk6oG3-icMUJeM3cnisvxa6eQYb77G4MzYF8TbxSfirhl34-/exec';
 
 const FOMC = [
   '2026-01-28','2026-03-18','2026-04-29','2026-06-17',
@@ -331,13 +359,59 @@ async function load() {
     var dv    = d.dff.current;
     var today = new Date(); today.setHours(0, 0, 0, 0);
     var next  = FOMC.find(function(dt) { return new Date(dt) >= today; });
+
+    // 기준금리 마지막 변경 찾기
+    var lastChg = 0;
+    if (d.dff.history && d.dff.history.length > 1) {
+      for (var i = 1; i < d.dff.history.length; i++) {
+        if (Math.abs(d.dff.history[i] - dv) > 0.001) {
+          lastChg = dv - d.dff.history[i];
+          break;
+        }
+      }
+    }
+    var chgColor = lastChg >= 0 ? '#ff4d6a' : '#00e5a0';
+    var chgArrow = lastChg > 0 ? '▲' : lastChg < 0 ? '▼' : '–';
+    var chgText  = lastChg !== 0
+      ? '<span style="color:' + chgColor + '">' + chgArrow + ' ' + (lastChg > 0 ? '+' : '') + lastChg.toFixed(2) + '%p</span> 직전 변경'
+      : '<span style="color:#5a6280">변동 없음</span>';
+
     document.getElementById('dff-val').innerHTML =
       dv.toFixed(2) + '<span class="info-unit">%</span>';
     document.getElementById('dff-sub').innerHTML =
-      '기준: ' + fmtD(d.dff.date) + '<br>' +
+      chgText + '<br>' +
       '<span style="color:#5a6280">다음 FOMC</span><br>' +
       '<span style="color:#ffcc00;font-family:\'IBM Plex Mono\',monospace;font-size:10px">' +
       (next ? next.replace(/-/g, '.') : '일정 확인 필요') + '</span>';
+
+    // 비농업 고용 (PAYEMS) - 월별
+    if (d.payems && !d.payems.error) {
+      var pv  = d.payems.current;
+      var pp  = d.payems.previous;
+      var pd  = pv - pp;
+      var pCol = pd >= 0 ? '#00e5a0' : '#ff4d6a';
+      var pArr = pd >= 0 ? '▲' : '▼';
+      document.getElementById('pay-val').innerHTML =
+        Math.round(pv).toLocaleString() + '<span class="info-unit">K</span>';
+      document.getElementById('pay-sub').innerHTML =
+        '<span style="color:' + pCol + '">' + pArr + ' ' + (pd >= 0 ? '+' : '') + Math.round(pd).toLocaleString() + 'K</span> 전월 대비<br>' +
+        '<span style="color:#5a6280">기준</span> ' + fmtD(d.payems.date);
+    }
+
+    // 실업률 (UNRATE) - 월별
+    if (d.unrate && !d.unrate.error) {
+      var uv  = d.unrate.current;
+      var up  = d.unrate.previous;
+      var ud  = uv - up;
+      // 실업률은 낮아질수록 좋음 → 색상 반대
+      var uCol = ud <= 0 ? '#00e5a0' : '#ff4d6a';
+      var uArr = ud > 0 ? '▲' : ud < 0 ? '▼' : '–';
+      document.getElementById('unr-val').innerHTML =
+        uv.toFixed(1) + '<span class="info-unit">%</span>';
+      document.getElementById('unr-sub').innerHTML =
+        '<span style="color:' + uCol + '">' + uArr + ' ' + (ud >= 0 ? '+' : '') + ud.toFixed(1) + '%p</span> 전월 대비<br>' +
+        '<span style="color:#5a6280">기준</span> ' + fmtD(d.unrate.date);
+    }
 
     // 한국 M2 (ECOS 십억원 → 조원)
     if (d.m2 && !d.m2.error) {
