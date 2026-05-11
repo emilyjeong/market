@@ -10,7 +10,7 @@ const CONFIG = {
   // ── MACRO SIGNAL 탭 ──────────────────────────────────────
   // 유동성(지준·TGA·RRP) / VIX / 기준금리 / M2 / 고용지표
   // 기존 Apps Script 배포 URL
-  MACRO_GAS_URL: 'https://script.google.com/macros/s/AKfycby0m0eYmkhK5JA2bTJafrOvWpQ90S6bQYYcWkpn7NQgm4XCU7-AXdmGqNi5mJU_8ZY/exec',
+  MACRO_GAS_URL: 'https://script.google.com/macros/s/AKfycbwrqFr1SkWt7A1eFCgdR7qEuU6XUBkSF8tR-u_YW_MYRyMXsN37God2SVM1Y2TOpqnp/exec',
 
   // ── 주가 & 시장 탭 ────────────────────────────────────────
   // GOOGLEFINANCE 기반 주가·52주 고저·스파크라인 데이터
