@@ -5,9 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#08090f">
 <meta name="color-scheme" content="dark">
-<title>MACRO SIGNAL</title>
+<title>EM Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
+/* ════════════════════════════════════════
+   기존 MACRO SIGNAL 스타일 (변경 없음)
+════════════════════════════════════════ */
 :root {
   --bg:     #08090f;
   --bg2:    #0d1020;
@@ -35,7 +38,6 @@ body {
   min-height: 100vh;
   padding-bottom: 40px;
 }
-
 .header {
   position: sticky; top: 0; z-index: 50;
   background: var(--bg2);
@@ -51,7 +53,6 @@ body {
 }
 .chip-text { font-size: 13px; font-weight: 600; color: var(--text); }
 .chip-arr  { font-size: 12px; color: var(--text2); }
-
 .group {
   margin: 12px 12px 0;
   border: 1px solid rgba(255,255,255,0.25);
@@ -65,7 +66,6 @@ body {
   color: var(--text2); letter-spacing: 1.5px; text-transform: uppercase; white-space: nowrap;
 }
 .sec-line { flex: 1; height: 1px; background: var(--border); }
-
 .liq-stack { display: flex; flex-direction: column; gap: 6px; }
 .liq-card {
   background: var(--card); border: 1px solid var(--border);
@@ -95,28 +95,15 @@ body {
 .liq-val  { font-family: var(--mono); font-size: 16px; font-weight: 600; }
 .liq-chg  { font-family: var(--mono); font-size: 9px; margin-top: 2px; }
 .liq-date { font-family: var(--mono); font-size: 8px; color: var(--text3); margin-top: 2px; }
-.liq-desc {
-  font-size: 10px; color: var(--text2);
-  display: flex; flex-direction: column; gap: 3px;
-}
-
+.liq-desc { font-size: 10px; color: var(--text2); display: flex; flex-direction: column; gap: 3px; }
 .two-col { display: flex; gap: 6px; }
 .two-col > * { flex: 1; min-width: 0; overflow: hidden; }
-
 .sent-card {
   background: var(--card); border: 1px solid var(--border);
   border-radius: 10px; padding: 14px 12px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.6);
 }
 .card-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
-
-/* F&G */
-.fg-svg-wrap { width: 100%; padding: 8px 4px 0; }
-.fg-svg-wrap svg { width: 100%; height: auto; display: block; overflow: visible; }
-.fg-score { font-family: var(--mono); font-size: 24px; font-weight: 700; text-align: center; margin-top: 8px; }
-.fg-label { font-family: var(--mono); font-size: 9px; font-weight: 600; text-align: center; margin-top: 3px; letter-spacing: 1px; }
-
-/* VIX */
 .vix-score { font-family: var(--mono); font-size: 34px; font-weight: 600; line-height: 1; margin-bottom: 3px; }
 .vix-chg   { font-family: var(--mono); font-size: 9px; margin-bottom: 10px; }
 .vix-note  {
@@ -125,7 +112,6 @@ body {
   border-radius: 6px; padding: 7px 8px;
 }
 .vix-note strong { color: var(--green); font-family: var(--mono); }
-
 .info-card {
   background: var(--card); border: 1px solid var(--border);
   border-radius: 10px; padding: 14px 12px;
@@ -135,11 +121,6 @@ body {
 .info-val   { font-family: var(--mono); font-size: 24px; font-weight: 600; line-height: 1; }
 .info-unit  { font-family: var(--mono); font-size: 11px; color: var(--text2); }
 .info-sub   { font-size: 10px; color: var(--text2); margin-top: 8px; line-height: 1.8; }
-.bar-wrap   { margin-top: 10px; }
-.bar-bg     { background: var(--border); border-radius: 99px; height: 4px; margin-bottom: 4px; overflow: hidden; }
-.bar-fill   { height: 100%; border-radius: 99px; background: var(--purple); width: 0; transition: width 1s; }
-.bar-labels { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 8px; color: var(--text3); }
-
 .bottom-time {
   margin: 16px 12px 0; padding-top: 12px;
   border-top: 1px solid var(--border);
@@ -151,25 +132,91 @@ body {
 }
 .time-str { font-family: var(--mono); font-size: 11px; color: var(--text2); }
 .date-str { font-family: var(--mono); font-size: 11px; color: var(--text3); }
-
-.up   { color: #00e5a0; font-weight: 700; }
-.down { color: #ff4d6a; font-weight: 700; }
-.muted{ color: #a0a8c0; }
-
+.up    { color: #00e5a0; font-weight: 700; }
+.down  { color: #ff4d6a; font-weight: 700; }
+.muted { color: #a0a8c0; }
 #debug {
   margin: 10px 12px; padding: 10px;
   background: #1a1a2e; border-radius: 8px;
   font-family: monospace; font-size: 10px;
-  color: #ff4d6a; word-break: break-all;
-  display: none;
+  color: #ff4d6a; word-break: break-all; display: none;
 }
-
 @keyframes blink  { 0%,100%{opacity:1} 50%{opacity:.2} }
 @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* ════════════════════════════════════════
+   탭 바 (신규)
+════════════════════════════════════════ */
+.tab-bar {
+  position: sticky; top: 57px; z-index: 49;
+  display: flex;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+}
+.tab-btn {
+  flex: 1; padding: 11px 0 10px;
+  font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 1.2px;
+  color: var(--text3); background: none; border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer; transition: color .15s, border-color .15s;
+  text-transform: uppercase;
+}
+.tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+.tab-pane        { display: none; }
+.tab-pane.active { display: block; }
+
+/* ════════════════════════════════════════
+   주가 & 시장 탭 (신규)
+════════════════════════════════════════ */
+.market-group {
+  margin: 12px 12px 0;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 14px; padding: 14px;
+  background: rgba(255,255,255,0.03);
+}
+.stock-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 14px 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+  animation: fadeUp .3s ease both;
+}
+.stock-card:last-child { margin-bottom: 0; }
+.sc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.sc-name   { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.sc-ticker { font-family: var(--mono); font-size: 9px; color: var(--text3); letter-spacing: 1px; }
+.sc-price  { font-family: var(--mono); font-size: 18px; font-weight: 600; color: var(--text); text-align: right; line-height: 1; margin-bottom: 3px; }
+.sc-change { font-family: var(--mono); font-size: 11px; font-weight: 600; text-align: right; }
+.sc-change.pos { color: var(--green); }
+.sc-change.neg { color: var(--red); }
+.spark-wrap { margin-bottom: 10px; border-radius: 4px; overflow: hidden; }
+.spark-wrap svg { display: block; width: 100%; }
+.range-labels {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 9px; color: var(--text3); margin-bottom: 5px;
+}
+.range-bg {
+  height: 5px; background: rgba(74,85,144,0.4);
+  border-radius: 3px; position: relative; margin-bottom: 4px;
+}
+.range-fill { height: 100%; border-radius: 3px; background: linear-gradient(to right, var(--red), var(--yellow), var(--green)); }
+.range-dot {
+  position: absolute; top: 50%; transform: translate(-50%,-50%);
+  width: 9px; height: 9px; border-radius: 50%;
+  background: #fff; border: 2px solid var(--card);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.5);
+}
+.range-pct { font-family: var(--mono); font-size: 9px; color: var(--text3); text-align: right; }
+.range-pct strong { font-size: 10px; }
+.mkt-loading {
+  font-family: var(--mono); font-size: 10px; color: var(--text3);
+  text-align: center; padding: 20px 0; letter-spacing: 1px;
+}
 </style>
 </head>
 <body>
 
+<!-- ── 헤더 ── -->
 <div class="header">
   <div class="logo">MACRO SIGNAL</div>
   <a class="blog-chip" href="https://blog.naver.com/optimal_life" target="_blank">
@@ -179,132 +226,142 @@ body {
   </a>
 </div>
 
-<div class="group">
-  <div class="sec-header">
-    <div class="sec-title">🇺🇸 Fed 3대 유동성</div>
-    <div class="sec-line"></div>
-  </div>
-  <div class="liq-stack">
-
-    <div class="liq-card c1">
-      <div class="liq-top">
-        <div>
-          <div class="liq-num">01</div>
-          <div class="liq-name">지급준비금</div>
-          <div class="liq-id">WRESBAL · 주별</div>
-        </div>
-        <div class="liq-right">
-          <div class="liq-val" id="res-val" style="color:#00e5a0">--</div>
-          <div class="liq-chg" id="res-chg"></div>
-          <div class="liq-date" id="res-date"></div>
-        </div>
-      </div>
-      <div class="liq-desc">
-        <div><span class="muted">잔고 ↑ </span><span class="up">증가</span><span class="muted"> → 유동성 </span><span class="up">증가</span></div>
-        <div><span class="muted">잔고 ↓ </span><span class="down">감소</span><span class="muted"> → 유동성 </span><span class="down">감소</span></div>
-      </div>
-    </div>
-
-    <div class="liq-card c2">
-      <div class="liq-top">
-        <div>
-          <div class="liq-num">02</div>
-          <div class="liq-name">TGA (재무부 계좌)</div>
-          <div class="liq-id">WTREGEN · 주별</div>
-        </div>
-        <div class="liq-right">
-          <div class="liq-val" id="tga-val" style="color:#ffcc00">--</div>
-          <div class="liq-chg" id="tga-chg"></div>
-          <div class="liq-date" id="tga-date"></div>
-        </div>
-      </div>
-      <div class="liq-desc">
-        <div><span class="muted">잔고 ↑ </span><span class="up">증가</span><span class="muted"> → 유동성 </span><span class="down">감소</span></div>
-        <div><span class="muted">잔고 ↓ </span><span class="down">감소</span><span class="muted"> → 유동성 </span><span class="up">증가</span></div>
-      </div>
-    </div>
-
-    <div class="liq-card c3">
-      <div class="liq-top">
-        <div>
-          <div class="liq-num">03</div>
-          <div class="liq-name">역레포 (RRP)</div>
-          <div class="liq-id">RRPONTSYD · 일별</div>
-        </div>
-        <div class="liq-right">
-          <div class="liq-val" id="rrp-val" style="color:#4dabf7">--</div>
-          <div class="liq-chg" id="rrp-chg"></div>
-          <div class="liq-date" id="rrp-date"></div>
-        </div>
-      </div>
-      <div class="liq-desc">
-        <div><span class="muted">잔고 ↑ </span><span class="up">증가</span><span class="muted"> → 유동성 </span><span class="down">감소</span></div>
-        <div><span class="muted">잔고 ↓ </span><span class="down">감소</span><span class="muted"> → 유동성 </span><span class="up">증가</span></div>
-      </div>
-    </div>
-
-  </div>
+<!-- ── 탭 바 ── -->
+<div class="tab-bar">
+  <button class="tab-btn active" id="btn-macro"  onclick="switchTab('macro')">MACRO SIGNAL</button>
+  <button class="tab-btn"        id="btn-market" onclick="switchTab('market')">주가 &amp; 시장</button>
 </div>
 
-<div class="group">
-  <div class="sec-header">
-    <div class="sec-title">📊 시장 심리</div>
-    <div class="sec-line"></div>
-  </div>
 
-  <div class="sent-card">
-    <div class="card-title">VIX 지수</div>
-    <div class="vix-score" id="vix-score">--</div>
-    <div class="vix-chg"   id="vix-chg"></div>
-    <div class="vix-note">
-      <strong>40↑</strong> 투자 타이밍 · 시차 감안 40부터 분할매수 (메르)
+<!-- ══════════════════════════════
+     탭 1: MACRO SIGNAL (기존 그대로)
+══════════════════════════════ -->
+<div class="tab-pane active" id="tab-macro">
+
+  <div class="group">
+    <div class="sec-header"><div class="sec-title">🇺🇸 Fed 3대 유동성</div><div class="sec-line"></div></div>
+    <div class="liq-stack">
+
+      <div class="liq-card c1">
+        <div class="liq-top">
+          <div><div class="liq-num">01</div><div class="liq-name">지급준비금</div><div class="liq-id">WRESBAL · 주별</div></div>
+          <div class="liq-right">
+            <div class="liq-val" id="res-val" style="color:#00e5a0">--</div>
+            <div class="liq-chg" id="res-chg"></div>
+            <div class="liq-date" id="res-date"></div>
+          </div>
+        </div>
+        <div class="liq-desc">
+          <div><span class="muted">잔고 ↑ </span><span class="up">증가</span><span class="muted"> → 유동성 </span><span class="up">증가</span></div>
+          <div><span class="muted">잔고 ↓ </span><span class="down">감소</span><span class="muted"> → 유동성 </span><span class="down">감소</span></div>
+        </div>
+      </div>
+
+      <div class="liq-card c2">
+        <div class="liq-top">
+          <div><div class="liq-num">02</div><div class="liq-name">TGA (재무부 계좌)</div><div class="liq-id">WTREGEN · 주별</div></div>
+          <div class="liq-right">
+            <div class="liq-val" id="tga-val" style="color:#ffcc00">--</div>
+            <div class="liq-chg" id="tga-chg"></div>
+            <div class="liq-date" id="tga-date"></div>
+          </div>
+        </div>
+        <div class="liq-desc">
+          <div><span class="muted">잔고 ↑ </span><span class="up">증가</span><span class="muted"> → 유동성 </span><span class="down">감소</span></div>
+          <div><span class="muted">잔고 ↓ </span><span class="down">감소</span><span class="muted"> → 유동성 </span><span class="up">증가</span></div>
+        </div>
+      </div>
+
+      <div class="liq-card c3">
+        <div class="liq-top">
+          <div><div class="liq-num">03</div><div class="liq-name">역레포 (RRP)</div><div class="liq-id">RRPONTSYD · 일별</div></div>
+          <div class="liq-right">
+            <div class="liq-val" id="rrp-val" style="color:#4dabf7">--</div>
+            <div class="liq-chg" id="rrp-chg"></div>
+            <div class="liq-date" id="rrp-date"></div>
+          </div>
+        </div>
+        <div class="liq-desc">
+          <div><span class="muted">잔고 ↑ </span><span class="up">증가</span><span class="muted"> → 유동성 </span><span class="down">감소</span></div>
+          <div><span class="muted">잔고 ↓ </span><span class="down">감소</span><span class="muted"> → 유동성 </span><span class="up">증가</span></div>
+        </div>
+      </div>
+
     </div>
   </div>
-</div>
 
-<div class="group">
-  <div class="sec-header">
-    <div class="sec-title">💰 통화량 &amp; 금리</div>
-    <div class="sec-line"></div>
-  </div>
-  <div class="two-col">
-
-    <div class="info-card">
-      <div class="info-title">한국 M2</div>
-      <div class="info-val" id="m2-val" style="color:#c5b3ff">--<span class="info-unit">조</span></div>
-      <div class="info-sub" id="m2-date" style="margin-top:10px">--</div>
+  <div class="group">
+    <div class="sec-header"><div class="sec-title">📊 시장 심리</div><div class="sec-line"></div></div>
+    <div class="sent-card">
+      <div class="card-title">VIX 지수</div>
+      <div class="vix-score" id="vix-score">--</div>
+      <div class="vix-chg"   id="vix-chg"></div>
+      <div class="vix-note"><strong>40↑</strong> 투자 타이밍 · 시차 감안 40부터 분할매수 (메르)</div>
     </div>
-
-    <div class="info-card">
-      <div class="info-title">미국 기준금리</div>
-      <div class="info-val" id="dff-val" style="color:#4dabf7">--<span class="info-unit">%</span></div>
-      <div class="info-sub" id="dff-sub"></div>
-    </div>
-
   </div>
-</div>
 
-<div class="group">
-  <div class="sec-header">
-    <div class="sec-title">🇺🇸 미국 고용지표</div>
-    <div class="sec-line"></div>
-  </div>
-  <div class="two-col">
-
-    <div class="info-card">
-      <div class="info-title">실업률</div>
-      <div class="info-val" id="unr-val" style="color:#ffcc00">--<span class="info-unit">%</span></div>
-      <div class="info-sub" id="unr-sub"></div>
+  <div class="group">
+    <div class="sec-header"><div class="sec-title">💰 통화량 &amp; 금리</div><div class="sec-line"></div></div>
+    <div class="two-col">
+      <div class="info-card">
+        <div class="info-title">한국 M2</div>
+        <div class="info-val" id="m2-val" style="color:#c5b3ff">--<span class="info-unit">조</span></div>
+        <div class="info-sub" id="m2-date" style="margin-top:10px">--</div>
+      </div>
+      <div class="info-card">
+        <div class="info-title">미국 기준금리</div>
+        <div class="info-val" id="dff-val" style="color:#4dabf7">--<span class="info-unit">%</span></div>
+        <div class="info-sub" id="dff-sub"></div>
+      </div>
     </div>
-
-    <div class="info-card">
-      <div class="info-title">비농업 고용</div>
-      <div class="info-val" id="pay-val" style="color:#c5b3ff">--<span class="info-unit">K</span></div>
-      <div class="info-sub" id="pay-sub"></div>
-    </div>
-
   </div>
-</div>
+
+  <div class="group">
+    <div class="sec-header"><div class="sec-title">🇺🇸 미국 고용지표</div><div class="sec-line"></div></div>
+    <div class="two-col">
+      <div class="info-card">
+        <div class="info-title">실업률</div>
+        <div class="info-val" id="unr-val" style="color:#ffcc00">--<span class="info-unit">%</span></div>
+        <div class="info-sub" id="unr-sub"></div>
+      </div>
+      <div class="info-card">
+        <div class="info-title">비농업 고용</div>
+        <div class="info-val" id="pay-val" style="color:#c5b3ff">--<span class="info-unit">K</span></div>
+        <div class="info-sub" id="pay-sub"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /tab-macro -->
+
+
+<!-- ══════════════════════════════
+     탭 2: 주가 & 시장 (신규)
+══════════════════════════════ -->
+<div class="tab-pane" id="tab-market">
+
+  <div class="market-group">
+    <div class="sec-header"><div class="sec-title">🇺🇸 미국 시장 지수</div><div class="sec-line"></div></div>
+    <div id="wrap-us-index"><div class="mkt-loading">LOADING ···</div></div>
+  </div>
+
+  <div class="market-group">
+    <div class="sec-header"><div class="sec-title">🇰🇷 한국 시장 지수</div><div class="sec-line"></div></div>
+    <div id="wrap-kr-index"><div class="mkt-loading">LOADING ···</div></div>
+  </div>
+
+  <div class="market-group">
+    <div class="sec-header"><div class="sec-title">🇺🇸 미국 개별주</div><div class="sec-line"></div></div>
+    <div id="wrap-us-stocks"><div class="mkt-loading">LOADING ···</div></div>
+  </div>
+
+  <div class="market-group">
+    <div class="sec-header"><div class="sec-title">🇰🇷 한국 개별주</div><div class="sec-line"></div></div>
+    <div id="wrap-kr-stocks"><div class="mkt-loading">LOADING ···</div></div>
+  </div>
+
+</div><!-- /tab-market -->
+
 
 <div id="debug"></div>
 
@@ -313,140 +370,169 @@ body {
   <div class="date-str" id="dateline">----.--.--</div>
 </div>
 
+
+<!-- config.js 먼저 로드 (GAS URL 관리) -->
+<script src="config.js"></script>
+
 <script>
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxlWyI-mLtL67AzTq9OIk6oG3-icMUJeM3cnisvxa6eQYb77G4MzYF8TbxSfirhl34-/exec';
-
-const FOMC = [
-  '2026-01-28','2026-03-18','2026-04-29','2026-06-17',
-  '2026-07-29','2026-09-16','2026-10-28','2026-12-09',
-];
-
-function fmtT(v)   { return '$' + v.toFixed(2) + 'T'; }
-function fmtD(s)   { return s.replace(/-/g, '.'); }
-function chgHTML(curr, prev) {
-  var d = curr - prev;
-  var col = d >= 0 ? '#00e5a0' : '#ff4d6a';
-  return '<span style="color:' + col + '">' + (d >= 0 ? '▲' : '▼') + ' ' +
-    (d >= 0 ? '+' : '') + d.toFixed(2) + 'T</span>';
+/* ────── 탭 전환 ────── */
+function switchTab(id) {
+  document.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('tab-' + id).classList.add('active');
+  document.getElementById('btn-' + id).classList.add('active');
 }
 
-function setLiq(id, data) {
-  document.getElementById(id + '-val').textContent = fmtT(data.current);
-  document.getElementById(id + '-chg').innerHTML   = chgHTML(data.current, data.previous);
-  document.getElementById(id + '-date').textContent = fmtD(data.date);
-}
-
-function vixColor(v) { return v >= 40 ? '#ff4d6a' : v >= 25 ? '#ffcc00' : '#00e5a0'; }
-
-async function load() {
-  try {
-    const res = await fetch(GAS_URL);
-    const d   = await res.json();
-
-    setLiq('res', d.reserves);
-    setLiq('tga', d.tga);
-    setLiq('rrp', d.rrp);
-
-    var vv = d.vix.current;
-    var vd = vv - d.vix.previous;
-    document.getElementById('vix-score').textContent = vv.toFixed(1);
-    document.getElementById('vix-score').style.color = vixColor(vv);
-    document.getElementById('vix-chg').innerHTML =
-      '<span style="color:' + (vd >= 0 ? '#ff4d6a' : '#00e5a0') + '">' +
-      (vd >= 0 ? '▲' : '▼') + ' ' + (vd >= 0 ? '+' : '') + vd.toFixed(1) +
-      '</span> 전일 대비';
-
-    var dv    = d.dff.current;
-    var today = new Date(); today.setHours(0, 0, 0, 0);
-    var next  = FOMC.find(function(dt) { return new Date(dt) >= today; });
-
-    // 기준금리 마지막 변경 찾기
-    var lastChg = 0;
-    if (d.dff.history && d.dff.history.length > 1) {
-      for (var i = 1; i < d.dff.history.length; i++) {
-        if (Math.abs(d.dff.history[i] - dv) > 0.001) {
-          lastChg = dv - d.dff.history[i];
-          break;
-        }
-      }
-    }
-    var chgColor = lastChg >= 0 ? '#ff4d6a' : '#00e5a0';
-    var chgArrow = lastChg > 0 ? '▲' : lastChg < 0 ? '▼' : '–';
-    var chgText  = lastChg !== 0
-      ? '<span style="color:' + chgColor + '">' + chgArrow + ' ' + (lastChg > 0 ? '+' : '') + lastChg.toFixed(2) + '%p</span> 직전 변경'
-      : '<span style="color:#5a6280">변동 없음</span>';
-
-    document.getElementById('dff-val').innerHTML =
-      dv.toFixed(2) + '<span class="info-unit">%</span>';
-    document.getElementById('dff-sub').innerHTML =
-      chgText + '<br>' +
-      '<span style="color:#5a6280">다음 FOMC</span><br>' +
-      '<span style="color:#ffcc00;font-family:\'IBM Plex Mono\',monospace;font-size:10px">' +
-      (next ? next.replace(/-/g, '.') : '일정 확인 필요') + '</span>';
-
-    // 비농업 고용 (PAYEMS) - 월별
-    if (d.payems && !d.payems.error) {
-      var pv  = d.payems.current;
-      var pp  = d.payems.previous;
-      var pd  = pv - pp;
-      var pCol = pd >= 0 ? '#00e5a0' : '#ff4d6a';
-      var pArr = pd >= 0 ? '▲' : '▼';
-      document.getElementById('pay-val').innerHTML =
-        Math.round(pv).toLocaleString() + '<span class="info-unit">K</span>';
-      document.getElementById('pay-sub').innerHTML =
-        '<span style="color:' + pCol + '">' + pArr + ' ' + (pd >= 0 ? '+' : '') + Math.round(pd).toLocaleString() + 'K</span> 전월 대비<br>' +
-        '<span style="color:#5a6280">기준</span> ' + fmtD(d.payems.date);
-    }
-
-    // 실업률 (UNRATE) - 월별
-    if (d.unrate && !d.unrate.error) {
-      var uv  = d.unrate.current;
-      var up  = d.unrate.previous;
-      var ud  = uv - up;
-      // 실업률은 낮아질수록 좋음 → 색상 반대
-      var uCol = ud <= 0 ? '#00e5a0' : '#ff4d6a';
-      var uArr = ud > 0 ? '▲' : ud < 0 ? '▼' : '–';
-      document.getElementById('unr-val').innerHTML =
-        uv.toFixed(1) + '<span class="info-unit">%</span>';
-      document.getElementById('unr-sub').innerHTML =
-        '<span style="color:' + uCol + '">' + uArr + ' ' + (ud >= 0 ? '+' : '') + ud.toFixed(1) + '%p</span> 전월 대비<br>' +
-        '<span style="color:#5a6280">기준</span> ' + fmtD(d.unrate.date);
-    }
-
-    // 한국 M2 (ECOS 십억원 → 조원)
-    if (d.m2 && !d.m2.error) {
-      var jo = Math.round(d.m2.current / 1000);
-      document.getElementById('m2-val').innerHTML =
-        jo.toLocaleString() + '<span class="info-unit">조</span>';
-      var dateStr = d.m2.date ? d.m2.date.slice(0,4) + '.' + d.m2.date.slice(4,6) : '';
-      var subHTML = '기준: ' + dateStr;
-      if (d.m2.previous) {
-        var yoy = ((d.m2.current - d.m2.previous) / d.m2.previous * 100).toFixed(1);
-        var yc  = parseFloat(yoy) >= 0 ? '#00e5a0' : '#ff4d6a';
-        subHTML += '<br>전년 동월 대비<br>' +
-          '<span style="color:' + yc + '">' + (parseFloat(yoy) >= 0 ? '+' : '') + yoy + '%</span>';
-      }
-      document.getElementById('m2-date').innerHTML = subHTML;
-    } else {
-      document.getElementById('m2-val').innerHTML = '오류';
-    }
-
-  } catch(e) {
-    var dbg = document.getElementById('debug');
-    dbg.style.display = 'block';
-    dbg.textContent   = '오류: ' + e.message;
-  }
-}
-
+/* ────── 시계 ────── */
 function tick() {
   var n = new Date();
   document.getElementById('clock').textContent    = n.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
   document.getElementById('dateline').textContent = n.toLocaleDateString('ko-KR', {year:'numeric', month:'2-digit', day:'2-digit'});
 }
+tick(); setInterval(tick, 1000);
 
-tick();
-setInterval(tick, 1000);
-load();
+/* ────── MACRO SIGNAL 로직 (기존 그대로, GAS_URL → CONFIG.MACRO_GAS_URL) ────── */
+var FOMC = ['2026-01-28','2026-03-18','2026-04-29','2026-06-17','2026-07-29','2026-09-16','2026-10-28','2026-12-09'];
+function fmtT(v)   { return '$' + v.toFixed(2) + 'T'; }
+function fmtD(s)   { return s.replace(/-/g, '.'); }
+function chgHTML(curr, prev) {
+  var d = curr - prev, col = d >= 0 ? '#00e5a0' : '#ff4d6a';
+  return '<span style="color:' + col + '">' + (d >= 0 ? '▲' : '▼') + ' ' + (d >= 0 ? '+' : '') + d.toFixed(2) + 'T</span>';
+}
+function setLiq(id, data) {
+  document.getElementById(id+'-val').textContent  = fmtT(data.current);
+  document.getElementById(id+'-chg').innerHTML    = chgHTML(data.current, data.previous);
+  document.getElementById(id+'-date').textContent = fmtD(data.date);
+}
+function vixColor(v) { return v >= 40 ? '#ff4d6a' : v >= 25 ? '#ffcc00' : '#00e5a0'; }
+
+async function loadMacro() {
+  try {
+    var res = await fetch(CONFIG.MACRO_GAS_URL);
+    var d   = await res.json();
+    setLiq('res', d.reserves); setLiq('tga', d.tga); setLiq('rrp', d.rrp);
+    var vv = d.vix.current, vd = vv - d.vix.previous;
+    document.getElementById('vix-score').textContent = vv.toFixed(1);
+    document.getElementById('vix-score').style.color = vixColor(vv);
+    document.getElementById('vix-chg').innerHTML =
+      '<span style="color:' + (vd >= 0 ? '#ff4d6a' : '#00e5a0') + '">' + (vd >= 0 ? '▲' : '▼') + ' ' + (vd >= 0 ? '+' : '') + vd.toFixed(1) + '</span> 전일 대비';
+    var dv = d.dff.current, today = new Date(); today.setHours(0,0,0,0);
+    var next = FOMC.find(function(dt){ return new Date(dt) >= today; });
+    var lastChg = 0;
+    if (d.dff.history && d.dff.history.length > 1) {
+      for (var i = 1; i < d.dff.history.length; i++) {
+        if (Math.abs(d.dff.history[i] - dv) > 0.001) { lastChg = dv - d.dff.history[i]; break; }
+      }
+    }
+    var chgColor = lastChg >= 0 ? '#ff4d6a' : '#00e5a0';
+    var chgText  = lastChg !== 0
+      ? '<span style="color:' + chgColor + '">' + (lastChg > 0 ? '▲' : '▼') + ' ' + (lastChg > 0 ? '+' : '') + lastChg.toFixed(2) + '%p</span> 직전 변경'
+      : '<span style="color:#5a6280">변동 없음</span>';
+    document.getElementById('dff-val').innerHTML = dv.toFixed(2) + '<span class="info-unit">%</span>';
+    document.getElementById('dff-sub').innerHTML = chgText + '<br><span style="color:#5a6280">다음 FOMC</span><br>' +
+      '<span style="color:#ffcc00;font-family:\'IBM Plex Mono\',monospace;font-size:10px">' + (next ? next.replace(/-/g,'.') : '일정 확인 필요') + '</span>';
+    if (d.payems && !d.payems.error) {
+      var pv = d.payems.current, pp = d.payems.previous, pd = pv - pp;
+      document.getElementById('pay-val').innerHTML = Math.round(pv).toLocaleString() + '<span class="info-unit">K</span>';
+      document.getElementById('pay-sub').innerHTML = '<span style="color:' + (pd >= 0 ? '#00e5a0' : '#ff4d6a') + '">' + (pd >= 0 ? '▲' : '▼') + ' ' + (pd >= 0 ? '+' : '') + Math.round(pd).toLocaleString() + 'K</span> 전월 대비<br><span style="color:#5a6280">기준</span> ' + fmtD(d.payems.date);
+    }
+    if (d.unrate && !d.unrate.error) {
+      var uv = d.unrate.current, ud = uv - d.unrate.previous;
+      document.getElementById('unr-val').innerHTML = uv.toFixed(1) + '<span class="info-unit">%</span>';
+      document.getElementById('unr-sub').innerHTML = '<span style="color:' + (ud <= 0 ? '#00e5a0' : '#ff4d6a') + '">' + (ud > 0 ? '▲' : ud < 0 ? '▼' : '–') + ' ' + (ud >= 0 ? '+' : '') + ud.toFixed(1) + '%p</span> 전월 대비<br><span style="color:#5a6280">기준</span> ' + fmtD(d.unrate.date);
+    }
+    if (d.m2 && !d.m2.error) {
+      var jo = Math.round(d.m2.current / 1000);
+      document.getElementById('m2-val').innerHTML = jo.toLocaleString() + '<span class="info-unit">조</span>';
+      var dateStr = d.m2.date ? d.m2.date.slice(0,4) + '.' + d.m2.date.slice(4,6) : '';
+      var subHTML = '기준: ' + dateStr;
+      if (d.m2.previous) {
+        var yoy = ((d.m2.current - d.m2.previous) / d.m2.previous * 100).toFixed(1);
+        subHTML += '<br>전년 동월 대비<br><span style="color:' + (parseFloat(yoy) >= 0 ? '#00e5a0' : '#ff4d6a') + '">' + (parseFloat(yoy) >= 0 ? '+' : '') + yoy + '%</span>';
+      }
+      document.getElementById('m2-date').innerHTML = subHTML;
+    } else { document.getElementById('m2-val').innerHTML = '오류'; }
+  } catch(e) {
+    var dbg = document.getElementById('debug');
+    dbg.style.display = 'block'; dbg.textContent = '오류: ' + e.message;
+  }
+}
+
+/* ────── 주가 & 시장 탭 ────── */
+var MOCK = {
+  'us-index':  [
+    { name:'S&P 500',    ticker:'SP500',     price:'5,814',   change:'+1.24%', neg:false, low:4103,   high:6147,   cur:5814,   trend:[1,3,2,4,3,5,4,6,5,5,6,7] },
+    { name:'NASDAQ 100', ticker:'NASDAQ100', price:'20,421',  change:'+1.67%', neg:false, low:16011,  high:22222,  cur:20421,  trend:[1,2,2,4,3,5,4,7,5,6,7,8] },
+  ],
+  'kr-index':  [
+    { name:'KOSPI 200',  ticker:'^KS200',    price:'362.4',   change:'-0.32%', neg:true,  low:296,    high:402,    cur:362,    trend:[5,4,5,3,4,4,3,5,4,3,4,4] },
+  ],
+  'us-stocks': [
+    { name:'Alphabet A', ticker:'GOOGL', price:'$167.4',   change:'+2.11%', neg:false, low:140.53, high:207.05, cur:167.4,  trend:[3,2,3,4,3,4,3,5,4,3,4,4] },
+    { name:'Tesla',      ticker:'TSLA',  price:'$252.1',   change:'-0.88%', neg:true,  low:138.80, high:488.54, cur:252.1,  trend:[7,5,4,3,5,4,3,4,3,3,3,3] },
+    { name:'Palantir',   ticker:'PLTR',  price:'$124.8',   change:'+3.40%', neg:false, low:19.83,  high:125.41, cur:124.8,  trend:[1,2,3,4,5,5,6,7,8,8,9,9] },
+    { name:'Rocket Lab', ticker:'RKLB',  price:'$28.6',    change:'+1.92%', neg:false, low:4.93,   high:34.99,  cur:28.6,   trend:[1,2,2,3,4,4,5,6,6,7,7,7] },
+    { name:'SCHD ETF',   ticker:'SCHD',  price:'$27.3',    change:'-0.15%', neg:true,  low:21.40,  high:28.77,  cur:27.3,   trend:[3,3,4,3,4,4,4,5,4,5,5,5] },
+    { name:'TSMC ADR',   ticker:'TSM',   price:'$186.2',   change:'+0.72%', neg:false, low:120.41, high:226.40, cur:186.2,  trend:[4,3,5,4,5,4,6,5,5,6,5,6] },
+    { name:'NVIDIA',     ticker:'NVDA',  price:'$117.2',   change:'+2.53%', neg:false, low:75.61,  high:153.13, cur:117.2,  trend:[2,3,3,5,4,6,5,7,6,7,7,8] },
+  ],
+  'kr-stocks': [
+    { name:'삼성전자',   ticker:'005930.KS', price:'58,100원',  change:'+1.22%', neg:false, low:48200,  high:88800,  cur:58100,  trend:[5,4,3,4,3,4,3,4,3,3,4,4] },
+    { name:'SK하이닉스', ticker:'000660.KS', price:'196,500원', change:'+0.51%', neg:false, low:149000, high:248500, cur:196500, trend:[4,3,5,4,5,5,4,6,5,5,6,5] },
+  ]
+};
+
+function sparkSVG(vals, color) {
+  var W = 340, H = 42, uid = 'g' + color.replace('#','');
+  var mn = Math.min.apply(null,vals), mx = Math.max.apply(null,vals);
+  var pts = vals.map(function(v,i){
+    return ((i/(vals.length-1))*W).toFixed(1) + ',' + (H - ((v-mn)/((mx-mn)||1))*(H-6) - 3).toFixed(1);
+  });
+  return '<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="42">' +
+    '<defs><linearGradient id="'+uid+'" x1="0" y1="0" x2="0" y2="1">' +
+    '<stop offset="0%" stop-color="'+color+'" stop-opacity=".2"/><stop offset="100%" stop-color="'+color+'" stop-opacity="0"/>' +
+    '</linearGradient></defs>' +
+    '<path d="M'+pts[0]+' L'+pts.join(' L')+' L'+W+','+H+' L0,'+H+' Z" fill="url(#'+uid+')"/>' +
+    '<polyline points="'+pts.join(' ')+'" fill="none" stroke="'+color+'" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>' +
+    '</svg>';
+}
+
+function cardHTML(s) {
+  var pct = Math.round(((s.cur - s.low) / ((s.high - s.low) || 1)) * 100);
+  var sc  = s.neg ? '#ff4d6a' : '#00e5a0';
+  var pc  = pct >= 70 ? '#00e5a0' : pct <= 30 ? '#ff4d6a' : '#ffcc00';
+  return '<div class="sc-top">' +
+    '<div><div class="sc-name">'+s.name+'</div><div class="sc-ticker">'+s.ticker+'</div></div>' +
+    '<div><div class="sc-price">'+s.price+'</div><div class="sc-change '+(s.neg?'neg':'pos')+'">'+s.change+'</div></div>' +
+    '</div>' +
+    '<div class="spark-wrap">'+sparkSVG(s.trend, sc)+'</div>' +
+    '<div class="range-labels"><span>52W 저 '+s.low.toLocaleString()+'</span><span>52W 고 '+s.high.toLocaleString()+'</span></div>' +
+    '<div class="range-bg"><div class="range-fill" style="width:'+pct+'%"></div><div class="range-dot" style="left:calc('+pct+'% - 4.5px)"></div></div>' +
+    '<div class="range-pct">52주 범위 내 <strong style="color:'+pc+'">'+pct+'%</strong> 위치</div>';
+}
+
+function renderSection(id, list) {
+  var w = document.getElementById(id); if (!w) return;
+  w.innerHTML = '';
+  list.forEach(function(s){ var d = document.createElement('div'); d.className = 'stock-card'; d.innerHTML = cardHTML(s); w.appendChild(d); });
+}
+
+function loadMarket() {
+  if (!CONFIG.MARKET_GAS_URL) {
+    // URL 미설정 → 목업 데이터 표시
+    ['us-index','kr-index','us-stocks','kr-stocks'].forEach(function(k){ renderSection('wrap-'+k, MOCK[k]); });
+    return;
+  }
+  fetch(CONFIG.MARKET_GAS_URL)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      ['us-index','kr-index','us-stocks','kr-stocks'].forEach(function(k){ renderSection('wrap-'+k, d[k] || MOCK[k]); });
+    })
+    .catch(function(){ ['us-index','kr-index','us-stocks','kr-stocks'].forEach(function(k){ renderSection('wrap-'+k, MOCK[k]); }); });
+}
+
+loadMacro();
+loadMarket();
 </script>
 </body>
 </html>
