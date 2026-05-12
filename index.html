@@ -75,10 +75,12 @@ body {
   display: flex; justify-content: space-between; align-items: center;
 }
 .logo {
-  font-family: var(--font-mono);
-  font-size: 15px; font-weight: 600;
+  font-family: var(--font-sans);
+  font-size: 26px;
+  font-weight: 400;
   color: var(--ink);
-  letter-spacing: 3px;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 .blog-chip {
   display: inline-flex; align-items: center; gap: 5px;
@@ -95,7 +97,7 @@ body {
    탭 바
 ════════════════════════════════════════ */
 .tab-bar {
-  position: sticky; top: 57px; z-index: 49;
+  position: sticky; top: 68px; z-index: 49;
   display: flex;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
