@@ -16,37 +16,26 @@
    디자인 시스템 토큰
 ════════════════════════════════════════ */
 :root {
-  /* 배경 레이어 */
   --bg:        #0a0a09;
   --surface:   #0f0f0e;
   --card:      #161513;
   --card-hi:   #1c1b19;
-
-  /* 테두리 */
   --border:     #2a2926;
   --border-mid: #353330;
-
-  /* 텍스트 */
   --ink:     #f0ede8;
   --ink-mid: #9a9690;
   --ink-dim: #565250;
-
-  /* 의미색 */
   --pos:    #00c98a;
   --neg:    #f04d62;
   --accent: #e8b800;
   --info:   #5aabf0;
   --purple: #b8a8f0;
-
-  /* 레이아웃 */
   --radius:    14px;
   --radius-sm:  8px;
   --radius-xs:  6px;
   --pad:        16px;
   --gap:        10px;
   --max-width:  480px;
-
-  /* 폰트 */
   --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
@@ -82,16 +71,6 @@ body {
   letter-spacing: -0.02em;
   line-height: 1.1;
 }
-.blog-chip {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: rgba(240,237,232,0.04);
-  border: 1px solid var(--border-mid);
-  border-radius: 99px;
-  padding: 6px 14px;
-  text-decoration: none;
-}
-.chip-text { font-family: var(--font-sans); font-size: 13px; font-weight: 600; color: var(--ink); }
-.chip-arr  { font-family: var(--font-mono); font-size: 12px; color: var(--ink-mid); }
 
 /* ════════════════════════════════════════
    탭 바
@@ -116,6 +95,37 @@ body {
 .tab-btn.active { color: var(--ink); border-bottom-color: var(--ink); }
 .tab-pane        { display: none; }
 .tab-pane.active { display: block; }
+
+/* ════════════════════════════════════════
+   거시지표 로더 (차트 이모지 펄스)
+════════════════════════════════════════ */
+.macro-loader {
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  color: var(--ink-mid);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+.macro-loader.hidden { display: none; }
+.macro-loader::before {
+  content: '📊';
+  font-size: 64px;
+  display: inline-block;
+  animation: loader-bounce 1.4s ease-in-out infinite;
+  filter: drop-shadow(0 0 24px rgba(90, 171, 240, 0.35));
+}
+@keyframes loader-bounce {
+  0%, 100% { transform: scale(1)    translateY(0);    opacity: 0.9; }
+  50%      { transform: scale(1.15) translateY(-6px); opacity: 1;   }
+}
+.macro-content.hidden { display: none; }
 
 /* ════════════════════════════════════════
    그룹 컨테이너 + 섹션 헤더
@@ -420,11 +430,6 @@ body {
 <!-- ── 헤더 ── -->
 <div class="header">
 <div class="logo">시장 지표</div>
-<a class="blog-chip" href="https://blog.naver.com/optimal_life" target="_blank">
-<span style="font-size:13px">📝</span>
-<span class="chip-text">블로그</span>
-<span class="chip-arr">↗</span>
-</a>
 </div>
 
 <!-- ── 탭 바 ── -->
@@ -438,6 +443,13 @@ body {
 탭 1: 거시 지표
 ══════════════════════════════ -->
 <div class="tab-pane active" id="tab-macro">
+
+<!-- 로더 -->
+<div id="macro-loader" class="macro-loader">지표 불러오는 중..</div>
+
+<!-- 실제 컨텐츠 (로딩 완료 시 표시) -->
+<div id="macro-content" class="macro-content hidden">
+
 <div class="group">
 <div class="sec-header"><div class="sec-title">🇺🇸 FED 3대 유동성</div><div class="sec-line"></div></div>
 <div class="liq-stack">
@@ -524,6 +536,8 @@ body {
 </div>
 </div>
 </div>
+
+</div><!-- /macro-content -->
 </div><!-- /tab-macro -->
 
 
@@ -585,6 +599,14 @@ function tick() {
 }
 tick(); setInterval(tick, 1000);
 
+/* ────── 거시 지표 로더 컨트롤 ────── */
+function hideMacroLoader() {
+  var loader  = document.getElementById('macro-loader');
+  var content = document.getElementById('macro-content');
+  if (loader)  loader.classList.add('hidden');
+  if (content) content.classList.remove('hidden');
+}
+
 /* ────── MACRO SIGNAL 로직 ────── */
 var FOMC = ['2026-01-28','2026-03-18','2026-04-29','2026-06-17','2026-07-29','2026-09-16','2026-10-28','2026-12-09'];
 function fmtT(v)   { return '$' + v.toFixed(2) + 'T'; }
@@ -615,13 +637,11 @@ async function loadMacro() {
     var dv = d.dff.current, today = new Date(); today.setHours(0,0,0,0);
     var next = FOMC.find(function(dt){ return new Date(dt) >= today; });
 
-    // 가장 최근 *과거* FOMC 일정
     var lastFOMC = null;
     for (var i = FOMC.length - 1; i >= 0; i--) {
       if (new Date(FOMC[i]) <= today) { lastFOMC = FOMC[i]; break; }
     }
 
-    // 직전 변경값 계산 (마지막으로 실제 금리가 움직인 폭)
     var lastChg = 0;
     if (d.dff.history && d.dff.history.length > 1) {
       for (var i = 1; i < d.dff.history.length; i++) {
@@ -629,9 +649,6 @@ async function loadMacro() {
       }
     }
 
-    // 최근 FOMC가 동결이었는지 판단:
-    // last FOMC 이전 시점의 금리가 현재와 같으면 → 동결
-    // (FRED 일별 데이터는 영업일 기준 ≈ 캘린더일 × 5/7)
     var isHold = false;
     if (lastFOMC && d.dff.history && d.dff.history.length > 5) {
       var calDays    = Math.floor((today - new Date(lastFOMC)) / 86400000);
@@ -675,9 +692,12 @@ async function loadMacro() {
       }
       document.getElementById('m2-date').innerHTML = subHTML;
     } else { document.getElementById('m2-val').innerHTML = '오류'; }
+
+    hideMacroLoader();
   } catch(e) {
     var dbg = document.getElementById('debug');
     dbg.style.display = 'block'; dbg.textContent = '오류: ' + e.message;
+    hideMacroLoader();
   }
 }
 
