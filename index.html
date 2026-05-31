@@ -636,9 +636,15 @@ function chgHTML(curr, prev) {
   return '<span style="color:' + col + '">' + (d >= 0 ? '▲' : '▼') + ' ' + (d >= 0 ? '+' : '') + d.toFixed(2) + 'T</span>';
 }
 function setLiq(id, data) {
-  document.getElementById(id+'-val').textContent  = fmtT(data.current);
-  document.getElementById(id+'-chg').innerHTML    = chgHTML(data.current, data.previous);
-  document.getElementById(id+'-date').textContent = fmtD(data.date);
+  var valEl = document.getElementById(id+'-val');
+  if (!valEl) return;
+  if (!data || data.current == null) {
+    valEl.textContent = 'N/A';
+    return;
+  }
+  valEl.textContent = fmtT(data.current);
+  if (data.previous != null) document.getElementById(id+'-chg').innerHTML = chgHTML(data.current, data.previous);
+  if (data.date) document.getElementById(id+'-date').textContent = fmtD(data.date);
 }
 function vixColor(v) { return v >= 40 ? COLOR.neg : v >= 25 ? COLOR.accent : COLOR.pos; }
 
