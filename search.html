@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>단지 검색</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0a09;--surface:#0f0f0e;--card:#161513;--card-hi:#1c1b19;
+  --border:#2a2926;--border-mid:#353330;
+  --ink:#f0ede8;--ink-mid:#9a9690;--ink-dim:#565250;
+  --pos:#00c98a;--neg:#f04d62;--accent:#e8b800;--info:#5aabf0;
+  --radius:14px;--radius-sm:8px;--pad:16px;
+  --font-sans:'Pretendard',-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;min-height:100%;background:var(--bg)!important;font-family:var(--font-sans);color:var(--ink);color-scheme:dark;}
+
+#header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px var(--pad);position:sticky;top:0;z-index:100;}
+.h-title{font-size:16px;font-weight:700;color:var(--ink);}
+.h-sub{font-size:11px;color:var(--ink-dim);margin-top:2px;font-family:var(--font-mono);}
+
+#content{max-width:480px;margin:0 auto;padding:12px var(--pad);padding-bottom:max(40px,env(safe-area-inset-bottom));}
+
+.search-card{background:var(--card-hi);border:1px solid var(--border-mid);border-radius:var(--radius);padding:14px;margin-bottom:14px;}
+.tabs{display:flex;gap:6px;margin-bottom:10px;}
+.tab{flex:1;padding:8px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-weight:600;color:var(--ink-mid);cursor:pointer;text-align:center;font-family:var(--font-sans);transition:all .15s;}
+.tab.active{background:rgba(90,171,240,.12);border-color:rgba(90,171,240,.35);color:var(--info);}
+
+.input-row{display:flex;gap:6px;}
+#query{flex:1;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font-sans);font-size:13px;color:var(--ink);outline:none;transition:border-color .2s;}
+#query:focus{border-color:var(--info);}
+#query::placeholder{color:var(--ink-dim);}
+#search-btn{padding:10px 16px;background:rgba(90,171,240,.12);border:1px solid rgba(90,171,240,.35);border-radius:var(--radius-sm);font-size:13px;font-weight:600;color:var(--info);cursor:pointer;font-family:var(--font-sans);}
+#search-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+.result-count{font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;font-family:var(--font-mono);font-weight:600;}
+
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px;}
+.r-name-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.r-name{flex:1;font-size:14px;font-weight:700;color:var(--ink);font-family:var(--font-sans);word-break:break-all;}
+.copy-btn{padding:5px 12px;background:rgba(0,201,138,.12);border:1px solid rgba(0,201,138,.35);border-radius:var(--radius-sm);font-size:11px;font-weight:600;color:var(--pos);cursor:pointer;font-family:var(--font-sans);flex-shrink:0;transition:all .15s;}
+.copy-btn.copied{background:rgba(232,184,0,.12);border-color:rgba(232,184,0,.35);color:var(--accent);}
+
+.r-meta-row{display:flex;flex-direction:column;gap:5px;margin-bottom:8px;}
+.r-meta{font-size:12px;color:var(--ink-mid);line-height:1.5;display:flex;gap:8px;align-items:flex-start;}
+.r-meta strong{color:var(--ink-dim);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.5px;font-family:var(--font-mono);flex-shrink:0;min-width:36px;padding-top:1px;}
+
+.r-chips{display:flex;gap:5px;flex-wrap:wrap;}
+.chip{font-size:10px;color:var(--ink-mid);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 9px;font-family:var(--font-mono);}
+
+#loading{display:none;text-align:center;padding:30px 0;}
+.spinner{display:inline-block;width:28px;height:28px;border:3px solid var(--border-mid);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.empty{text-align:center;padding:40px 20px;color:var(--ink-dim);font-size:13px;}
+.empty-icon{font-size:32px;margin-bottom:8px;}
+
+#error{display:none;background:rgba(240,77,98,.08);border:1px solid rgba(240,77,98,.25);border-radius:var(--radius-sm);padding:12px;color:var(--neg);font-size:12px;margin-bottom:12px;line-height:1.5;}
+
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card-hi);border:1px solid var(--border-mid);border-radius:20px;padding:8px 18px;font-size:13px;color:var(--ink);opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap;z-index:300;max-width:90vw;overflow:hidden;text-overflow:ellipsis;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div id="header">
+<div class="h-title">🔍 단지 검색</div>
+<div class="h-sub">data.go.kr · 공동주택 단지정보</div>
+</div>
+
+<div id="content">
+
+<div class="search-card">
+<div class="tabs">
+<button class="tab active" data-type="name" onclick="setType('name')">단지명</button>
+<button class="tab" data-type="address" onclick="setType('address')">주소</button>
+</div>
+<div class="input-row">
+<input type="text" id="query" placeholder="단지명 입력 (예: 남산타운)" onkeypress="if(event.key==='Enter') doSearch()">
+<button id="search-btn" onclick="doSearch()">검색</button>
+</div>
+</div>
+
+<div id="error"></div>
+<div id="loading"><div class="spinner"></div></div>
+
+<div id="empty" class="empty">
+<div class="empty-icon">🔎</div>
+<div>검색어 입력하고 검색 버튼 눌러줘</div>
+</div>
+
+<div id="results"></div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API_KEY = 'cdccbe38f5ce28831b3f47143dafd7e19db8d97e84baa1d2559f650e2bf12389';
+const API_URL = 'https://api.odcloud.kr/api/15106861/v1/uddi:46a20910-19aa-462e-ba09-e897b77d0e76';
+
+var searchType = 'name';
+
+function setType(type) {
+  searchType = type;
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.classList.toggle('active', t.dataset.type === type);
+  });
+  document.getElementById('query').placeholder =
+    type === 'name' ? '단지명 입력 (예: 남산타운)' : '주소 입력 (예: 신당동 844)';
+  document.getElementById('query').focus();
+}
+
+function doSearch() {
+  var query = document.getElementById('query').value.trim();
+  if (!query) {
+    showToast('검색어를 입력해줘!');
+    return;
+  }
+
+  var loading = document.getElementById('loading');
+  var error = document.getElementById('error');
+  var empty = document.getElementById('empty');
+  var results = document.getElementById('results');
+
+  loading.style.display = 'block';
+  error.style.display = 'none';
+  empty.style.display = 'none';
+  results.innerHTML = '';
+  document.getElementById('search-btn').disabled = true;
+
+  var field = searchType === 'address' ? '주소' : '단지명_건축물대장';
+  var condParam = 'cond[' + field + '::LIKE]';
+  var url = API_URL
+    + '?page=1&perPage=30'
+    + '&' + encodeURIComponent(condParam) + '=' + encodeURIComponent(query)
+    + '&serviceKey=' + encodeURIComponent(API_KEY);
+
+  fetch(url)
+    .then(function(r){
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(json){
+      var items = (json && json.data) || [];
+      var apts = items.filter(function(i){ return i['단지종류'] === 1; });
+      renderResults(apts);
+    })
+    .catch(function(e){
+      var msg = e.message || e.toString();
+      if (msg.indexOf('Failed to fetch') >= 0 || msg.indexOf('NetworkError') >= 0) {
+        error.innerHTML = '⚠️ CORS 차단인 듯! 브라우저에서 직접 API 호출이 막혔어.<br>Apps Script 통하는 방식으로 바꿔야 함. Claude에게 알려줘!';
+      } else {
+        error.textContent = '검색 실패: ' + msg;
+      }
+      error.style.display = 'block';
+    })
+    .finally(function(){
+      loading.style.display = 'none';
+      document.getElementById('search-btn').disabled = false;
+    });
+}
+
+function renderResults(apts) {
+  var container = document.getElementById('results');
+  if (apts.length === 0) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">😅</div><div>결과 없음. 다른 검색어로 시도해봐!</div></div>';
+    return;
+  }
+
+  var html = '<div class="result-count">' + apts.length + '개 결과</div>';
+  apts.forEach(function(a) {
+    var priceName = a['단지명_공시가격'] || '';
+    var buildingName = a['단지명_건축물대장'] || '';
+    var address = a['주소'] || '';
+    var units = a['세대수'] || '';
+    var dong = a['동수'] || '';
+    var yearBuilt = a['사용승인일'] ? a['사용승인일'].substring(0,4) : '';
+    var aptId = a['단지고유번호'] || '';
+    var copyName = priceName || buildingName;
+
+    html += '<div class="result-card">'
+      + '<div class="r-name-row">'
+      + '<div class="r-name">' + escapeHtml(copyName) + '</div>'
+      + '<button class="copy-btn" onclick="copyName(this, \'' + escapeAttr(copyName) + '\')">복사</button>'
+      + '</div>'
+      + '<div class="r-meta-row">';
+    if (priceName && priceName !== buildingName) {
+      html += '<div class="r-meta"><strong>대장명</strong><span>' + escapeHtml(buildingName) + '</span></div>';
+    }
+    if (address) {
+      html += '<div class="r-meta"><strong>주소</strong><span>' + escapeHtml(address) + '</span></div>';
+    }
+    html += '</div>'
+      + '<div class="r-chips">'
+      + (yearBuilt ? '<span class="chip">' + yearBuilt + '년</span>' : '')
+      + (dong ? '<span class="chip">' + dong + '동</span>' : '')
+      + (units ? '<span class="chip">' + Number(units).toLocaleString() + '세대</span>' : '')
+      + (aptId ? '<span class="chip">ID ' + aptId + '</span>' : '')
+      + '</div>'
+      + '</div>';
+  });
+  container.innerHTML = html;
+}
+
+function copyName(btn, name) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(name).then(function(){
+      btn.textContent = '복사됨 ✓';
+      btn.classList.add('copied');
+      showToast('"' + name + '" 복사됐어!');
+      setTimeout(function(){
+        btn.textContent = '복사';
+        btn.classList.remove('copied');
+      }, 2000);
+    }).catch(function(){
+      showToast('복사 실패 ㅠ');
+    });
+  } else {
+    // 폴백: textarea로 복사
+    var ta = document.createElement('textarea');
+    ta.value = name;
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      btn.textContent = '복사됨 ✓';
+      btn.classList.add('copied');
+      showToast('"' + name + '" 복사됐어!');
+      setTimeout(function(){
+        btn.textContent = '복사';
+        btn.classList.remove('copied');
+      }, 2000);
+    } catch(e) {
+      showToast('복사 실패 ㅠ');
+    }
+    document.body.removeChild(ta);
+  }
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2000);
+}
+
+function escapeHtml(s) {
+  return (s || '').toString().replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function escapeAttr(s) {
+  return (s || '').toString().replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+}
+</script>
+</body>
+</html>
