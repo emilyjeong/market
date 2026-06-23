@@ -197,7 +197,7 @@ function renderResults(items, totalCount) {
     + '</div>';
 
   items.forEach(function(a) {
-    var copyText = a.kaptName + ', ' + a.as2;
+    var copyText = a.kaptName;
     var region   = [a.as1, a.as2, a.as3, a.as4].filter(function(x){return x;}).join(' ');
 
     html += '<div class="result-card">'
