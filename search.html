@@ -26,36 +26,32 @@ html,body{width:100%;min-height:100%;background:var(--bg)!important;font-family:
 
 #content{max-width:480px;margin:0 auto;padding:12px var(--pad);padding-bottom:max(40px,env(safe-area-inset-bottom));}
 
-.search-card{background:var(--card-hi);border:1px solid var(--border-mid);border-radius:var(--radius);padding:14px;margin-bottom:14px;}
-.tabs{display:flex;gap:6px;margin-bottom:10px;}
-.tab{flex:1;padding:8px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-weight:600;color:var(--ink-mid);cursor:pointer;text-align:center;font-family:var(--font-sans);transition:all .15s;}
-.tab.active{background:rgba(90,171,240,.12);border-color:rgba(90,171,240,.35);color:var(--info);}
-
-.input-row{display:flex;gap:6px;}
-#query{flex:1;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font-sans);font-size:13px;color:var(--ink);outline:none;transition:border-color .2s;}
-#query:focus{border-color:var(--info);}
-#query::placeholder{color:var(--ink-dim);}
-#search-btn{padding:10px 16px;background:rgba(90,171,240,.12);border:1px solid rgba(90,171,240,.35);border-radius:var(--radius-sm);font-size:13px;font-weight:600;color:var(--info);cursor:pointer;font-family:var(--font-sans);}
+.search-card{background:var(--card-hi);border:1px solid var(--border-mid);border-radius:var(--radius);padding:14px;margin-bottom:10px;}
+.input-row{display:flex;flex-direction:column;gap:8px;}
+.input-line{display:flex;gap:6px;}
+input[type="text"]{flex:1;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font-sans);font-size:13px;color:var(--ink);outline:none;transition:border-color .2s;}
+input[type="text"]:focus{border-color:var(--info);}
+input[type="text"]::placeholder{color:var(--ink-dim);}
+#search-btn{padding:10px 16px;background:rgba(90,171,240,.12);border:1px solid rgba(90,171,240,.35);border-radius:var(--radius-sm);font-size:13px;font-weight:600;color:var(--info);cursor:pointer;font-family:var(--font-sans);white-space:nowrap;}
 #search-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+#status{font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;font-family:var(--font-mono);text-align:center;padding:6px;}
+#status.loading{color:var(--accent);}
+#status.error{color:var(--neg);}
 
 .result-count{font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;font-family:var(--font-mono);font-weight:600;}
 
 .result-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px;}
-.r-name-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.r-name-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
 .r-name{flex:1;font-size:14px;font-weight:700;color:var(--ink);font-family:var(--font-sans);word-break:break-all;}
-.copy-btn{padding:5px 12px;background:rgba(0,201,138,.12);border:1px solid rgba(0,201,138,.35);border-radius:var(--radius-sm);font-size:11px;font-weight:600;color:var(--pos);cursor:pointer;font-family:var(--font-sans);flex-shrink:0;transition:all .15s;}
+.copy-btn{padding:6px 14px;background:rgba(0,201,138,.12);border:1px solid rgba(0,201,138,.35);border-radius:var(--radius-sm);font-size:11px;font-weight:600;color:var(--pos);cursor:pointer;font-family:var(--font-sans);flex-shrink:0;transition:all .15s;}
 .copy-btn.copied{background:rgba(232,184,0,.12);border-color:rgba(232,184,0,.35);color:var(--accent);}
 
-.r-meta-row{display:flex;flex-direction:column;gap:5px;margin-bottom:8px;}
-.r-meta{font-size:12px;color:var(--ink-mid);line-height:1.5;display:flex;gap:8px;align-items:flex-start;}
-.r-meta strong{color:var(--ink-dim);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.5px;font-family:var(--font-mono);flex-shrink:0;min-width:36px;padding-top:1px;}
+.r-region{font-size:12px;color:var(--ink-mid);margin-bottom:8px;}
+.r-region .pin{color:var(--ink-dim);margin-right:4px;}
 
 .r-chips{display:flex;gap:5px;flex-wrap:wrap;}
 .chip{font-size:10px;color:var(--ink-mid);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 9px;font-family:var(--font-mono);}
-
-#loading{display:none;text-align:center;padding:30px 0;}
-.spinner{display:inline-block;width:28px;height:28px;border:3px solid var(--border-mid);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
 
 .empty{text-align:center;padding:40px 20px;color:var(--ink-dim);font-size:13px;}
 .empty-icon{font-size:32px;margin-bottom:8px;}
@@ -70,28 +66,30 @@ html,body{width:100%;min-height:100%;background:var(--bg)!important;font-family:
 
 <div id="header">
 <div class="h-title">🔍 단지 검색</div>
-<div class="h-sub">data.go.kr · 공동주택 단지정보</div>
+<div class="h-sub">국토교통부 · 전국 K-apt 단지</div>
 </div>
 
 <div id="content">
 
 <div class="search-card">
-<div class="tabs">
-<button class="tab active" data-type="name" onclick="setType('name')">단지명</button>
-<button class="tab" data-type="address" onclick="setType('address')">주소</button>
-</div>
 <div class="input-row">
-<input type="text" id="query" placeholder="단지명 입력 (예: 남산타운)" onkeypress="if(event.key==='Enter') doSearch()">
+<div class="input-line">
+<input type="text" id="query" placeholder="단지명 (예: 남산타운)" onkeypress="if(event.key==='Enter') doSearch()">
+</div>
+<div class="input-line">
+<input type="text" id="region" placeholder="시군구 (선택, 예: 종로구)" onkeypress="if(event.key==='Enter') doSearch()">
 <button id="search-btn" onclick="doSearch()">검색</button>
 </div>
 </div>
+</div>
+
+<div id="status">초기화 중...</div>
 
 <div id="error"></div>
-<div id="loading"><div class="spinner"></div></div>
 
-<div id="empty" class="empty">
+<div id="empty" class="empty" style="display:none;">
 <div class="empty-icon">🔎</div>
-<div>검색어 입력하고 검색 버튼 눌러줘</div>
+<div>단지명 또는 시군구로 검색!</div>
 </div>
 
 <div id="results"></div>
@@ -101,45 +99,43 @@ html,body{width:100%;min-height:100%;background:var(--bg)!important;font-family:
 <div id="toast"></div>
 
 <script>
-const API_KEY = 'cdccbe38f5ce28831b3f47143dafd7e19db8d97e84baa1d2559f650e2bf12389';
-const API_URL = 'https://api.odcloud.kr/api/15106861/v1/uddi:46a20910-19aa-462e-ba09-e897b77d0e76';
+const API_URL = 'https://apis.data.go.kr/1613000/AptListService3/getTotalAptList3';
+const SERVICE_KEY = 'cdccbe38f5ce28831b3f47143dafd7e19db8d97e84baa1d2559f650e2bf12389';
+const CACHE_KEY = 'aptMasterV1';
+const CACHE_TS_KEY = 'aptMasterAtV1';
+const ONE_DAY = 24 * 60 * 60 * 1000;
 
-var searchType = 'name';
+var aptList = [];
+var isLoaded = false;
 
-function setType(type) {
-  searchType = type;
-  document.querySelectorAll('.tab').forEach(function(t){
-    t.classList.toggle('active', t.dataset.type === type);
-  });
-  document.getElementById('query').placeholder =
-    type === 'name' ? '단지명 입력 (예: 남산타운)' : '주소 입력 (예: 신당동 844)';
-  document.getElementById('query').focus();
+loadMaster();
+
+function setStatus(msg, cls) {
+  var el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = cls || '';
 }
 
-function doSearch() {
-  var query = document.getElementById('query').value.trim();
-  if (!query) {
-    showToast('검색어를 입력해줘!');
-    return;
-  }
+function loadMaster() {
+  // 캐시 확인 (24시간)
+  try {
+    var cached   = localStorage.getItem(CACHE_KEY);
+    var cachedAt = parseInt(localStorage.getItem(CACHE_TS_KEY) || '0');
+    if (cached && (Date.now() - cachedAt < ONE_DAY)) {
+      aptList = JSON.parse(cached);
+      isLoaded = true;
+      var hours = Math.floor((Date.now() - cachedAt) / (60 * 60 * 1000));
+      setStatus(aptList.length.toLocaleString() + '개 단지 · 캐시 (' + hours + '시간 전)');
+      document.getElementById('empty').style.display = 'block';
+      return;
+    }
+  } catch(e) { /* 캐시 못 읽으면 그냥 새로 받기 */ }
 
-  var loading = document.getElementById('loading');
-  var error = document.getElementById('error');
-  var empty = document.getElementById('empty');
-  var results = document.getElementById('results');
+  setStatus('전국 단지 데이터 받는 중... (~3MB)', 'loading');
 
-  loading.style.display = 'block';
-  error.style.display = 'none';
-  empty.style.display = 'none';
-  results.innerHTML = '';
-  document.getElementById('search-btn').disabled = true;
-
-  var field = searchType === 'address' ? '주소' : '단지명_건축물대장';
-  var condParam = 'cond[' + field + '::LIKE]';
   var url = API_URL
-    + '?page=1&perPage=30'
-    + '&' + encodeURIComponent(condParam) + '=' + encodeURIComponent(query)
-    + '&serviceKey=' + encodeURIComponent(API_KEY);
+    + '?serviceKey=' + encodeURIComponent(SERVICE_KEY)
+    + '&numOfRows=30000&pageNo=1&_type=json';
 
   fetch(url)
     .then(function(r){
@@ -147,100 +143,136 @@ function doSearch() {
       return r.json();
     })
     .then(function(json){
-      var items = (json && json.data) || [];
-      var apts = items.filter(function(i){ return i['단지종류'] === 1; });
-      renderResults(apts);
+      var items = json && json.response && json.response.body && json.response.body.items
+                  ? json.response.body.items : [];
+      // 필요한 필드만 저장 (용량 절약)
+      aptList = items.map(function(a){
+        return {
+          kaptCode: a.kaptCode || '',
+          kaptName: a.kaptName || '',
+          as1: a.as1 || '',
+          as2: a.as2 || '',
+          as3: a.as3 || '',
+          as4: a.as4 || '',
+          bjdCode: a.bjdCode || ''
+        };
+      });
+      isLoaded = true;
+      setStatus(aptList.length.toLocaleString() + '개 단지 로딩됨 ✓');
+
+      // 캐시 저장 (다음 방문 시 빠르게)
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(aptList));
+        localStorage.setItem(CACHE_TS_KEY, Date.now().toString());
+      } catch(e) { /* localStorage 꽉 차도 무시 */ }
+
+      document.getElementById('empty').style.display = 'block';
     })
     .catch(function(e){
-      var msg = e.message || e.toString();
-      if (msg.indexOf('Failed to fetch') >= 0 || msg.indexOf('NetworkError') >= 0) {
-        error.innerHTML = '⚠️ CORS 차단인 듯! 브라우저에서 직접 API 호출이 막혔어.<br>Apps Script 통하는 방식으로 바꿔야 함. Claude에게 알려줘!';
-      } else {
-        error.textContent = '검색 실패: ' + msg;
-      }
-      error.style.display = 'block';
-    })
-    .finally(function(){
-      loading.style.display = 'none';
-      document.getElementById('search-btn').disabled = false;
+      setStatus('로딩 실패: ' + e.message, 'error');
+      var err = document.getElementById('error');
+      err.innerHTML = '⚠️ 단지 데이터 로딩 실패. CORS 또는 네트워크 문제일 수 있어.<br>회사 와이파이라면 폰 데이터로 다시 시도해봐!';
+      err.style.display = 'block';
     });
 }
 
-function renderResults(apts) {
-  var container = document.getElementById('results');
-  if (apts.length === 0) {
-    container.innerHTML = '<div class="empty"><div class="empty-icon">😅</div><div>결과 없음. 다른 검색어로 시도해봐!</div></div>';
+function doSearch() {
+  if (!isLoaded) {
+    showToast('아직 데이터 로딩 중!');
     return;
   }
 
-  var html = '<div class="result-count">' + apts.length + '개 결과</div>';
-  apts.forEach(function(a) {
-    var priceName = a['단지명_공시가격'] || '';
-    var buildingName = a['단지명_건축물대장'] || '';
-    var address = a['주소'] || '';
-    var units = a['세대수'] || '';
-    var dong = a['동수'] || '';
-    var yearBuilt = a['사용승인일'] ? a['사용승인일'].substring(0,4) : '';
-    var aptId = a['단지고유번호'] || '';
-    var copyName = priceName || buildingName;
+  var q      = document.getElementById('query').value.trim();
+  var region = document.getElementById('region').value.trim();
+
+  if (!q && !region) {
+    showToast('단지명이나 시군구 중 하나는 입력해줘!');
+    return;
+  }
+
+  document.getElementById('empty').style.display = 'none';
+
+  var qN      = normalize(q);
+  var regionN = normalize(region);
+
+  var filtered = aptList.filter(function(a){
+    var nameMatch   = !qN      || normalize(a.kaptName).indexOf(qN) >= 0;
+    var regionMatch = !regionN || normalize(a.as2).indexOf(regionN) >= 0
+                               || normalize(a.as1).indexOf(regionN) >= 0;
+    return nameMatch && regionMatch;
+  });
+
+  var limited = filtered.slice(0, 100);
+  renderResults(limited, filtered.length);
+}
+
+function normalize(s) {
+  return (s || '').toString().toLowerCase().replace(/\s/g, '');
+}
+
+function renderResults(items, totalCount) {
+  var container = document.getElementById('results');
+  if (items.length === 0) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">😅</div><div>결과 없음. 검색어 다시 확인해줘!</div></div>';
+    return;
+  }
+
+  var html = '<div class="result-count">'
+    + items.length + '개 표시'
+    + (totalCount > items.length ? ' (전체 ' + totalCount + '개)' : '')
+    + '</div>';
+
+  items.forEach(function(a) {
+    var copyText = a.kaptName + ', ' + a.as2;  // "남산타운, 중구"
+    var region   = [a.as1, a.as2, a.as3, a.as4].filter(function(x){return x;}).join(' ');
 
     html += '<div class="result-card">'
       + '<div class="r-name-row">'
-      + '<div class="r-name">' + escapeHtml(copyName) + '</div>'
-      + '<button class="copy-btn" onclick="copyName(this, \'' + escapeAttr(copyName) + '\')">복사</button>'
+      + '<div class="r-name">' + escapeHtml(a.kaptName) + '</div>'
+      + '<button class="copy-btn" onclick="copyText(this, \'' + escapeAttr(copyText) + '\')">복사</button>'
       + '</div>'
-      + '<div class="r-meta-row">';
-    if (priceName && priceName !== buildingName) {
-      html += '<div class="r-meta"><strong>대장명</strong><span>' + escapeHtml(buildingName) + '</span></div>';
-    }
-    if (address) {
-      html += '<div class="r-meta"><strong>주소</strong><span>' + escapeHtml(address) + '</span></div>';
-    }
-    html += '</div>'
+      + '<div class="r-region"><span class="pin">📍</span>' + escapeHtml(region) + '</div>'
       + '<div class="r-chips">'
-      + (yearBuilt ? '<span class="chip">' + yearBuilt + '년</span>' : '')
-      + (dong ? '<span class="chip">' + dong + '동</span>' : '')
-      + (units ? '<span class="chip">' + Number(units).toLocaleString() + '세대</span>' : '')
-      + (aptId ? '<span class="chip">ID ' + aptId + '</span>' : '')
+      + '<span class="chip">' + escapeHtml(a.kaptCode) + '</span>'
+      + '<span class="chip">법정동 ' + escapeHtml(a.bjdCode) + '</span>'
       + '</div>'
       + '</div>';
   });
   container.innerHTML = html;
 }
 
-function copyName(btn, name) {
+function copyText(btn, text) {
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(name).then(function(){
-      btn.textContent = '복사됨 ✓';
-      btn.classList.add('copied');
-      showToast('"' + name + '" 복사됐어!');
-      setTimeout(function(){
-        btn.textContent = '복사';
-        btn.classList.remove('copied');
-      }, 2000);
-    }).catch(function(){
-      showToast('복사 실패 ㅠ');
-    });
+    navigator.clipboard.writeText(text).then(function(){
+      markCopied(btn, text);
+    }).catch(function(){ fallbackCopy(btn, text); });
   } else {
-    // 폴백: textarea로 복사
-    var ta = document.createElement('textarea');
-    ta.value = name;
-    document.body.appendChild(ta);
-    ta.select();
-    try {
-      document.execCommand('copy');
-      btn.textContent = '복사됨 ✓';
-      btn.classList.add('copied');
-      showToast('"' + name + '" 복사됐어!');
-      setTimeout(function(){
-        btn.textContent = '복사';
-        btn.classList.remove('copied');
-      }, 2000);
-    } catch(e) {
-      showToast('복사 실패 ㅠ');
-    }
-    document.body.removeChild(ta);
+    fallbackCopy(btn, text);
   }
+}
+
+function markCopied(btn, text) {
+  btn.textContent = '복사됨 ✓';
+  btn.classList.add('copied');
+  showToast('"' + text + '" 복사됐어!');
+  setTimeout(function(){
+    btn.textContent = '복사';
+    btn.classList.remove('copied');
+  }, 2000);
+}
+
+function fallbackCopy(btn, text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    markCopied(btn, text);
+  } catch(e) {
+    showToast('복사 실패 ㅠ');
+  }
+  document.body.removeChild(ta);
 }
 
 function showToast(msg) {
@@ -255,7 +287,6 @@ function escapeHtml(s) {
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
   });
 }
-
 function escapeAttr(s) {
   return (s || '').toString().replace(/'/g, '&#39;').replace(/"/g, '&quot;');
 }
