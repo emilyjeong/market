@@ -84,7 +84,6 @@ input[type="text"]::placeholder{color:var(--ink-dim);}
 </div>
 
 <div id="status">초기화 중...</div>
-
 <div id="error"></div>
 
 <div id="empty" class="empty" style="display:none;">
@@ -99,13 +98,12 @@ input[type="text"]::placeholder{color:var(--ink-dim);}
 <div id="toast"></div>
 
 <script>
-const API_URL = 'https://apis.data.go.kr/1613000/AptListService3/getTotalAptList3';
-const SERVICE_KEY = 'cdccbe38f5ce28831b3f47143dafd7e19db8d97e84baa1d2559f650e2bf12389';
-const CACHE_KEY = 'aptMasterV1';
-const CACHE_TS_KEY = 'aptMasterAtV1';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbybVombj1cZKYDuO7rD8XRHjN_hkYt_m8jdmcUz5GWXznhX-ORrY0TTzsqxXBMTeLCSww/exec';
+const CACHE_KEY    = 'aptMasterV2';
+const CACHE_TS_KEY = 'aptMasterAtV2';
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
-var aptList = [];
+var aptList  = [];
 var isLoaded = false;
 
 loadMaster();
@@ -122,45 +120,28 @@ function loadMaster() {
     var cached   = localStorage.getItem(CACHE_KEY);
     var cachedAt = parseInt(localStorage.getItem(CACHE_TS_KEY) || '0');
     if (cached && (Date.now() - cachedAt < ONE_DAY)) {
-      aptList = JSON.parse(cached);
+      aptList  = JSON.parse(cached);
       isLoaded = true;
       var hours = Math.floor((Date.now() - cachedAt) / (60 * 60 * 1000));
       setStatus(aptList.length.toLocaleString() + '개 단지 · 캐시 (' + hours + '시간 전)');
       document.getElementById('empty').style.display = 'block';
       return;
     }
-  } catch(e) { /* 캐시 못 읽으면 그냥 새로 받기 */ }
+  } catch(e) { /* 캐시 못 읽으면 새로 받기 */ }
 
-  setStatus('전국 단지 데이터 받는 중... (~3MB)', 'loading');
+  setStatus('전국 단지 데이터 받는 중...', 'loading');
 
-  var url = API_URL
-    + '?serviceKey=' + encodeURIComponent(SERVICE_KEY)
-    + '&numOfRows=30000&pageNo=1&_type=json';
-
-  fetch(url)
-    .then(function(r){
+  fetch(SCRIPT_URL + '?action=aptlist')
+    .then(function(r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
     })
-    .then(function(json){
-      var items = json && json.response && json.response.body && json.response.body.items
-                  ? json.response.body.items : [];
-      // 필요한 필드만 저장 (용량 절약)
-      aptList = items.map(function(a){
-        return {
-          kaptCode: a.kaptCode || '',
-          kaptName: a.kaptName || '',
-          as1: a.as1 || '',
-          as2: a.as2 || '',
-          as3: a.as3 || '',
-          as4: a.as4 || '',
-          bjdCode: a.bjdCode || ''
-        };
-      });
+    .then(function(json) {
+      if (!json.ok) throw new Error('서버 오류');
+      aptList  = json.items || [];
       isLoaded = true;
       setStatus(aptList.length.toLocaleString() + '개 단지 로딩됨 ✓');
 
-      // 캐시 저장 (다음 방문 시 빠르게)
       try {
         localStorage.setItem(CACHE_KEY, JSON.stringify(aptList));
         localStorage.setItem(CACHE_TS_KEY, Date.now().toString());
@@ -168,42 +149,35 @@ function loadMaster() {
 
       document.getElementById('empty').style.display = 'block';
     })
-    .catch(function(e){
+    .catch(function(e) {
       setStatus('로딩 실패: ' + e.message, 'error');
       var err = document.getElementById('error');
-      err.innerHTML = '⚠️ 단지 데이터 로딩 실패. CORS 또는 네트워크 문제일 수 있어.<br>회사 와이파이라면 폰 데이터로 다시 시도해봐!';
+      err.innerHTML = '⚠️ 단지 데이터 로딩 실패.<br>잠시 후 새로고침 해봐!';
       err.style.display = 'block';
     });
 }
 
 function doSearch() {
-  if (!isLoaded) {
-    showToast('아직 데이터 로딩 중!');
-    return;
-  }
+  if (!isLoaded) { showToast('아직 데이터 로딩 중!'); return; }
 
   var q      = document.getElementById('query').value.trim();
   var region = document.getElementById('region').value.trim();
 
-  if (!q && !region) {
-    showToast('단지명이나 시군구 중 하나는 입력해줘!');
-    return;
-  }
+  if (!q && !region) { showToast('단지명이나 시군구 중 하나는 입력해줘!'); return; }
 
   document.getElementById('empty').style.display = 'none';
 
   var qN      = normalize(q);
   var regionN = normalize(region);
 
-  var filtered = aptList.filter(function(a){
+  var filtered = aptList.filter(function(a) {
     var nameMatch   = !qN      || normalize(a.kaptName).indexOf(qN) >= 0;
     var regionMatch = !regionN || normalize(a.as2).indexOf(regionN) >= 0
                                || normalize(a.as1).indexOf(regionN) >= 0;
     return nameMatch && regionMatch;
   });
 
-  var limited = filtered.slice(0, 100);
-  renderResults(limited, filtered.length);
+  renderResults(filtered.slice(0, 100), filtered.length);
 }
 
 function normalize(s) {
@@ -223,13 +197,13 @@ function renderResults(items, totalCount) {
     + '</div>';
 
   items.forEach(function(a) {
-    var copyText = a.kaptName + ', ' + a.as2;  // "남산타운, 중구"
+    var copyText = a.kaptName + ', ' + a.as2;
     var region   = [a.as1, a.as2, a.as3, a.as4].filter(function(x){return x;}).join(' ');
 
     html += '<div class="result-card">'
       + '<div class="r-name-row">'
       + '<div class="r-name">' + escapeHtml(a.kaptName) + '</div>'
-      + '<button class="copy-btn" onclick="copyText(this, \'' + escapeAttr(copyText) + '\')">복사</button>'
+      + '<button class="copy-btn" onclick="copyText(this,\'' + escapeAttr(copyText) + '\')">복사</button>'
       + '</div>'
       + '<div class="r-region"><span class="pin">📍</span>' + escapeHtml(region) + '</div>'
       + '<div class="r-chips">'
@@ -243,9 +217,8 @@ function renderResults(items, totalCount) {
 
 function copyText(btn, text) {
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(function(){
-      markCopied(btn, text);
-    }).catch(function(){ fallbackCopy(btn, text); });
+    navigator.clipboard.writeText(text).then(function(){ markCopied(btn, text); })
+      .catch(function(){ fallbackCopy(btn, text); });
   } else {
     fallbackCopy(btn, text);
   }
@@ -255,10 +228,7 @@ function markCopied(btn, text) {
   btn.textContent = '복사됨 ✓';
   btn.classList.add('copied');
   showToast('"' + text + '" 복사됐어!');
-  setTimeout(function(){
-    btn.textContent = '복사';
-    btn.classList.remove('copied');
-  }, 2000);
+  setTimeout(function(){ btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
 }
 
 function fallbackCopy(btn, text) {
@@ -266,12 +236,8 @@ function fallbackCopy(btn, text) {
   ta.value = text;
   document.body.appendChild(ta);
   ta.select();
-  try {
-    document.execCommand('copy');
-    markCopied(btn, text);
-  } catch(e) {
-    showToast('복사 실패 ㅠ');
-  }
+  try { document.execCommand('copy'); markCopied(btn, text); }
+  catch(e) { showToast('복사 실패 ㅠ'); }
   document.body.removeChild(ta);
 }
 
@@ -283,12 +249,12 @@ function showToast(msg) {
 }
 
 function escapeHtml(s) {
-  return (s || '').toString().replace(/[&<>"']/g, function(c){
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  return (s||'').toString().replace(/[&<>"']/g,function(c){
+    return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
   });
 }
 function escapeAttr(s) {
-  return (s || '').toString().replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+  return (s||'').toString().replace(/'/g,'&#39;').replace(/"/g,'&quot;');
 }
 </script>
 </body>
